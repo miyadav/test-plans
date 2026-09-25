@@ -22,25 +22,13 @@
 | Feature status (Jira) | In Progress |
 | Plan status | Active — tracking In Progress feature |
 
-### Changelog
-
-- **v1.1 (2026-09-23):** Feature retitled to add "Console UI and E2E Testing"; feature status
-  Refinement → In Progress. Admin post-success rollback dropped as an explicit success criterion
-  (F-6 softened; still validated per Expected Results). Added UX epic HPUX-2193 (+ HPUX-2194/2195)
-  references and traceability. Strengthened the `oc-mirror` / customized-catalog risk (new open
-  question, 2026-09-18). Elevated E2E automation to a tracked deliverable. Added **§6.4 Test Data
-  Strategy** and **Appendix C** (per-state fixture recipes + discovery queries) and matching
-  deliverables/tasks/data-asks/risks.
-- **v1.0 (2026-09-02):** Initial IEEE 829 draft.
-
 ---
 
 ## 2. Introduction
 
 This test plan describes the strategy, scope, resources, and schedule for validating the
 **OLMv0 → OLMv1 migration** capability delivered as a Tech Preview in OpenShift 5.1, covering both
-the **Console UI workflow** and the **end-to-end (E2E) test automation** now called out explicitly
-in the feature title.
+the **Console UI workflow** and the **end-to-end (E2E) test automation** 
 
 The feature enables an existing user of OLMv0 (classic OLM) to migrate eligible operators to
 OLMv1 (Operator Controller / ClusterExtension model) through a Console UI workflow, with
@@ -148,7 +136,7 @@ Traceability is to the success criteria and expected results of OCPSTRAT-2692.
 
 ### 6.3 Automation strategy
 
-- **E2E automation is a tracked deliverable of this feature** (per the retitle), not best-effort.
+- **E2E automation is a tracked deliverable of this feature** 
 - Bulk-migration path automated using the library/CI flag (F-10) and run in CI on TP builds.
 - UI happy-paths (single + bulk) automated via console e2e harness; complex fault-injection and
   disconnected scenarios may remain **manual** for TP where automation cost is prohibitive.
@@ -160,7 +148,7 @@ Traceability is to the success criteria and expected results of OCPSTRAT-2692.
 The central data problem is obtaining a set of OLMv0 operators that deterministically exercise
 each of the four states. The strategy has two rules and three sources.
 
-**Rule 1 — Separate discovery from oracle.** The migration library (`ScanAll()` / `migrate check`)
+**Rule 1 — Separate discovery.** The migration library (`ScanAll()` / `migrate check`)
 is itself the classifier under test, so it must **not** be used to both select and judge fixtures
 (circular). Fixtures are selected and labelled using signals **independent** of the library —
 PackageManifest install modes, bundle dependencies, CSV phase, and CatalogSource/ClusterCatalog
@@ -206,7 +194,7 @@ A test item **passes** when all of the following hold for its associated `F-*` c
 | Eligibility checks (F-13) | Each of the four checks correctly gates eligibility; catalog availability evaluated during scan, not deferred |
 | Idempotency (F-14) | Re-scan of a migrated operator reports "already migrated" and skips |
 | Dry-run safety | `check` / `gather` cause zero cluster mutations |
-| Fixture oracle | Library classification matches the independently-derived state label for every fixture (§6.4, Appendix C) |
+| Fixture | Library classification matches the independently-derived state label for every fixture (§6.4, Appendix C) |
 
 **Overall feature pass:** 100% of P1 (F-1, F-2, F-4, F-6, F-7, F-11) cases pass; ≥95% of all
 functional cases pass with no open Critical/Blocker defects against TP acceptance criteria.
@@ -258,7 +246,7 @@ functional cases pass with no open Critical/Blocker defects against TP acceptanc
 | T-6 | Execute single + bulk happy-path (F-1, F-2, F-3, F-12) | T-3, T-4 |
 | T-7 | Execute fault-injection + auto-rollback (F-4, F-5) | T-3, T-4 |
 | T-8 | Execute admin rollback + confirmation UX (F-6) | T-6, HPUX-2195 |
-| T-9 | Execute state/classification + non-blocking + idempotency (F-7, F-8, F-11, F-14); assert fixture oracle | T-2, T-3 |
+| T-9 | Execute state/classification + non-blocking + idempotency (F-7, F-8, F-11, F-14); assert fixture | T-2, T-3 |
 | T-10 | Execute disconnected migration incl. customized catalog (F-9) | T-2a, T-4 |
 | T-11 | Measure & record controller management gap (F-3) | T-6 |
 | T-12 | Triage defects, retest, produce execution report | T-6…T-11 |
@@ -340,7 +328,7 @@ Aligned to the 5.1 planning/refinement cycle. Milestones (to be dated during ref
 | Controller management-gap duration undefined ("TBD" spike) | Can't set pass bound for F-3 | Record measured gap; agree provisional TP bound with dev; gate GA (OCPSTRAT-3281) on it |
 | `oc-mirror` + **customized catalog** behaviour unresolved (open question 2026-09-18) | Blocks/undermines disconnected F-9 | Pre-configure catalog manually; treat customized-catalog case as conditional; track the dependency to resolution |
 | Sourcing realistic eligible operators is hard / catalog contents drift | Weak or unstable eligible + bulk coverage | Combine real operators with **synthetic minimal** operators; re-validate the shortlist against the live catalog at test time (Appendix C) |
-| Fixture oracle circularity | False confidence if SUT judges its own fixtures | Label fixtures from **independent** metadata; assert library classification == label (§6.4) |
+| Fixture circularity | False confidence if SUT judges its own fixtures | Label fixtures from **independent** metadata; assert library classification == label (§6.4) |
 | Double-confirmation criterion dropped from Jira | Ambiguous F-6 pass condition | Confirm intended UX with PM/UX via HPUX-2195 before finalizing F-6 |
 | Conflict state hard to construct reliably | Weak F-11 coverage | Script deterministic creation of Subscription + annotated ClusterExtension for same package (Appendix C) |
 | OCPSTRAT-2693 library API still changing | Test churn | Version-pin against agreed API; keep cases traced to states not signatures |
@@ -378,11 +366,11 @@ Cleanup (delete Subscription and CSV)`
 
 ### Appendix C — Test data: per-state fixture recipes & discovery queries
 
-**Discovery-vs-oracle rule:** label every fixture from the *independent signal* column below, then
+**Discovery rule:** label every fixture from the *independent signal* column below, then
 assert the migration library's classification equals that label. Never let the library both select
 and judge a fixture.
 
-| State (label) | How to build the fixture | Independent signal (the oracle input) |
+| State (label) | How to build the fixture | Independent signal (the input) |
 |---------------|--------------------------|----------------------------------------|
 | Eligible | Install a dependency-free, AllNamespaces-capable operator from an enabled catalog; or a synthetic minimal operator | PackageManifest advertises `AllNamespaces`; bundle declares no required package/GVK; CSV `phase=Succeeded`; package resolvable in an enabled ClusterCatalog |
 | Ineligible — mode | Install an OwnNamespace/SingleNamespace-only operator (or dual-mode with a namespaced OperatorGroup) | CSV `spec.installModes` lacks supported `AllNamespaces` |
@@ -412,6 +400,6 @@ oc get clustercatalogs.olm.operatorframework.io       # available catalogs
 oc get catalogsource -n openshift-marketplace         # OLMv0 catalog sources
 ```
 
-**Cross-check (oracle assertion):** run `migrate check` (dry-run, no mutations) or `ScanAll()` and
+**Cross-check (assertion):** run `migrate check` (dry-run, no mutations) or `ScanAll()` and
 confirm the reported state for each fixture equals its independently-derived label above.
 
