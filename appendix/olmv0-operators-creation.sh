@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 #
-# install-operator-olmv0.sh
+# olmv0-operators-creation.sh
 #
 # Install an operator through classic OLMv0 (Subscription + OperatorGroup),
 # bypassing OLMv1 / "Software Catalog" (ClusterExtension) on OCP 5.0+ clusters.
 #
 # Usage:
-#   ./install-operator-olmv0.sh <package-or-search> [-n <namespace>] [-c <channel>] [--approval Manual|Automatic] [--dry-run]
+#   ./olmv0-operators-creation.sh <package-or-search> [-n <namespace>] [-c <channel>] [--approval Manual|Automatic] [--dry-run]
 #
 # Examples:
-#   ./install-operator-olmv0.sh awss3-operator-registry -n aws-s3
-#   ./install-operator-olmv0.sh "AWS S3"                 # searches, lists matches
-#   ./install-operator-olmv0.sh aws-load-balancer-operator -n aws-load-balancer-operator -c stable-v1
+#   ./olmv0-operators-creation.sh awss3-operator-registry -n aws-s3
+#   ./olmv0-operators-creation.sh "AWS S3"                 # searches, lists matches
+#   ./olmv0-operators-creation.sh aws-load-balancer-operator -n aws-load-balancer-operator -c stable-v1
 #
 set -euo pipefail
 
